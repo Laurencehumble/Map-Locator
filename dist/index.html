@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floor Center</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
+<script defer src="{{ asset('/js/script.js') }}"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/@popperjs/core@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <link rel="stylesheet" href="output.css">
+</head>
+<body>
+<div class="tw-block tw-w-full tw-h-16 square:tw-hidden"></div>
+<div class="tw-w-full tw-h-16 tw-bg-white"><br></div>
+
+<div class="tw-flex tw-flex-wrap tw-items-center tw-justify-center tw-w-full tw-font-outfit mega_menu_anim tw-h-fit">
+
+      <div class="tw-w-[280px] tw-h-auto laptop:tw-h-[802px] laptop:tw-w-square_1024px tablet:tw-w-[695px] square:tw-w-tablet_768px big_mobile:tw-w-[320px] tw-relative tw-bg-white">
+
+        <div class="tw-w-full">
+            <div class="tw-flex tw-flex-col tw-justify-center tw-gap-6">
+                <div class="tw-w-full tw-mt-15">
+                <div class="tw-flex tw-w-full tw-text-lg big_mobile:tw-text-2xl square:tw-text-4xl tw-font-medium tw-leading-10 tw-text-slate-600 tw-text-start tw-gap-2.5 tw-font-outfit">FC <span class="tw-text-red-600">BRANCH LOCATOR</span></div>
+                <div class="tw-flex tw-w-full tw-text-[15px] big_mobile:tw-text-[16px] square:tw-text-xl tw-font-light tw-leading-normal tw-text-start tw-text-slate-600 tw-font-outfit">"Find a Store Near You: Use our branch locator to easily find the nearest store, ensuring you can shop with convenience and confidence."</div>
+                </div>
+                <div class="tw-flex tw-justify-center tw-border-t tw-border-gray-200"></div>
+            </div>
+        </div>
+
+
+
+        <!-- {{-- Map & Branches --}} -->
+    <div class="tw-inline-flex tw-justify-center tw-gap-0 tablet:tw-flex-row big_mobile:tw-flex-col-reverse small_mobile:tw-flex-col-reverse laptop:tw-gap-4 tablet:tw-gap-5">
+
+            <!-- {{-- Branches --}} -->
+
+         <!-- {{-- laptop view search --}} -->
+            <div class="tw-inline-flex tw-flex-col tw-justify-center tw-w-full">
+
+                <div class="tw-w-[280px] big_mobile:tw-w-full tw-h-12 tw-px-5 tw-py-2.5 tw-mt-6 tw-bg-gray-200 tw-rounded-tl-md tw-rounded-tr-md tw-justify-between tw-items-center tw-inline-flex">
+                    <input class="tw-text-base tw-w-[200px] big_mobile:tw-w-full tw-font-normal tw-leading-tight tw-bg-gray-200 tw-border-none tw-text-start tw-text-slate-500 tw-font-outfit" type="text" id="storeInput" placeholder="Search for location ...">
+                    <button onclick="updateStoreListOnInput()" class="tw-w-6 tw-h-6">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="#64748B"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="tw-w-[280px] tablet:tw-w-[339px] big_mobile:tw-w-[320px] tw-inline-flex tw-flex-row tw-justify-between">
+                <button id="nearby-btn" class="tw-inline-flex tw-text-base tablet:tw-text-lg tw-items-center tw-justify-start tw-text-center tablet:tw-gap-[10px] tw-mx-4 tw-text-gray-600 tw-font-outfit"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="m19.07 4.93l-1.41 1.41A8.014 8.014 0 0 1 20 12a8 8 0 0 1-8 8a8 8 0 0 1-8-8c0-4.08 3.05-7.44 7-7.93v2.02C8.16 6.57 6 9.03 6 12a6 6 0 0 0 6 6a6 6 0 0 0 6-6c0-1.66-.67-3.16-1.76-4.24l-1.41 1.41C15.55 9.9 16 10.9 16 12a4 4 0 0 1-4 4a4 4 0 0 1-4-4c0-1.86 1.28-3.41 3-3.86v2.14c-.6.35-1 .98-1 1.72a2 2 0 0 0 2 2a2 2 0 0 0 2-2c0-.74-.4-1.38-1-1.72V2h-1A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10c0-2.76-1.12-5.26-2.93-7.07"/></svg><a class="tw-text-[15px] tablet:tw-text-lg tw-gray-600 tw-font-outfit">Near Branch</a></button>
+                <button id="my-location-btn" class="tw-inline-flex tw-text-base tablet:tw-text-lg tw-items-center tw-justify-end tw-text-center tablet:tw-gap-[10px] tw-mx-4 tw-text-gray-600 tw-font-outfit"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 8.25a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 0 0 0-7.5"/><path fill="currentColor" fill-rule="evenodd" d="M12 1.25a.75.75 0 0 1 .75.75v1.282a8.752 8.752 0 0 1 7.968 7.968H22a.75.75 0 0 1 0 1.5h-1.282a8.752 8.752 0 0 1-7.968 7.968V22a.75.75 0 0 1-1.5 0v-1.282a8.752 8.752 0 0 1-7.968-7.968H2a.75.75 0 0 1 0-1.5h1.282a8.752 8.752 0 0 1 7.968-7.968V2a.75.75 0 0 1 .75-.75M4.75 12a7.25 7.25 0 1 0 14.5 0a7.25 7.25 0 0 0-14.5 0" clip-rule="evenodd"/></svg><a class="tw-text-[15px] tablet:tw-text-lg tw-gray-600 tw-font-outfit">My Location</a></button>
+                </div>
+                    <div class="tw-w-[280px] laptop:tw-h-[530px] big_mobile:tw-h-[547px] tablet:tw-w-[339px] big_mobile:tw-w-[320px] tw-h-[320px] tw-bg-gray-100 tw-inline-flex">
+                        <div class="tw-overflow-x-hidden tw-overflow-y-scroll tw-scroll-smooth">
+                            <div id="sidebar"></div>
+                        </div>
+                    </div>
+
+                    </div>
+        <!-- {{-- Map --}} -->
+         <div class="tw-w-full tw-mt-6">
+            <div id="map" class="tw-z-30 laptop:tw-w-[670px] laptop:tw-h-[600px] tablet:tw-h-[622px] big_mobile:tw-w-[320px] tablet:tw-w-[339px] big_mobile:tw-h-[347px] tw-w-[280px] square:tw-w-[400px] small_mobile:tw-h-[247px] tw-justify-center tw-inline-flex">
+            </div>
+            </div>
+
+    </div>
+
+</div>
+
+<div class="tw-w-full tw-h-[76px]"></div>
+
+</div>
+
+
+<div id="loading-spinner"
+class="tw-fixed tw-top-0 tw-right-0 tw-z-30 tw-items-center tw-justify-center tw-hidden tw-w-full tw-h-full tw-bg-opacity-75 tw-backdrop-blur-sm">
+<!-- Add your loading spinner or indicator here -->
+<img src="{{ url('/img/ring.svg') }}" alt="Loading" class="tw-rounded-full ">
+</div>
+
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  let map;
+  let sidebar;
+
+  const branches = {
+    luzon: [
+      {
+        name: "FC Floor Center Sacop",
+        location: [15.0778998,120.640889,15],
+        image: "",
+        address: "YC Bldg. McArthur Hi-way, Pilar Village, San Isidro, City of San Fernando Pampanga",
+        contact: "(045) 455-2185 / 0949-889-2392",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city:"San Fernando City, Pampanga City",
+      },
+      {
+        name: "FC Floor Center Angeles 1",
+        location: [15.1438687,120.5880543,21],
+        image: "/img/img-floorcenter-branch/Angeles-1.jpg",
+        address: "5197 Henson St., Lourdes Northwest, Angeles City, Pampanga",
+        contact: "(045) 300-5469 / (0949-889-2394",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Angeles City, Pampanga City",
+      },
+      {
+        name: "FC Floor Center Angeles 2",
+        location: [15.164622,120.6048437,21],
+        image: "/img/img-floorcenter-branch/angeles_2.jpg",
+        address: "Purok 4 FG Nepomuceno Ave. Pulung Maragul, Angeles City",
+        contact: "0919-073-9001",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Angeles City, Pampanga City",
+      },
+      {
+        name: "FC Floor Center Commonwealth 2",
+        location: [14.6661734,121.0722821,21],
+        image: "/img/img-floorcenter-branch/Commonwealth-2.jpg",
+        address: "15-C Block 2, Commonwealth Village, Commonwealth Ave., Diliman Q.C",
+        contact: "(02) 8660-9710 / 0999-228-8945",
+        schedule: "Monday-Saturday: 8:00am - 8:00pm  Sunday: 8:00am - 8:00pm",
+        city: "Quezon City, Manila City NCR",
+      },
+      {
+        name: "FC Floor Center McArthur",
+        location: [15.0982345,120.6226541,21],
+        image: "/img/img-floorcenter-branch/McArthur.jpg",
+        address: "#10 Brgy. Saguin McArthur Hi-way City of San Fernando, Pampanga",
+        contact: "0949-889-2397",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "San Fernando City, Pampanga City",
+      },
+      {
+        name: "FC Floor Center Mexico",
+        location: [15.0516755,120.7034479,21],
+        image: "",
+        address: "Unit 108 - 112 Dona Isafel Bldg. 3 Lagundi, Mexico Pampanga",
+        contact: "(045) 652-5002 / 0949-889-2449",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Mexico City, Pampanga City",
+      },
+      {
+        name: "FC Floor Center Munoz",
+        location: [14.6571038,121.0171644,21],
+        image: "/img/img-floorcenter-branch/Munoz.jpg",
+        address: "1207 E. Delos Santos Ave. Brgy katipunan Munoz, Quezon City",
+        contact: "(02) 8355-7355 / 0949-889-2499",
+        schedule: "Monday-Saturday: 8:00am - 8:00pm  Sunday: 8:00am - 8:00pm",
+        city: "Quezon City, Manila City Metro Manila NCR",
+      },
+      {
+        name: "FC Floor Center Balintawak 1252",
+        location: [14.6580031,121.0111079,21],
+        image: "/img/img-floorcenter-branch/balintawak.jpg",
+        address: "1252 Floor Center Building, EDSA Balintawak, Quezon City",
+        contact: "0998-884-7789 / 0949-889-2446",
+        schedule: "Monday-Saturday: 8:00am - 8:00pm  Sunday: 8:00am - 8:00pm",
+        city: "Quezon City, Manila City Metro Manila NCR",
+      },
+      {
+        name: "FC Floor Center Libis",
+        location: [14.6092687,121.0765202,21],
+        image: "/img/img-floorcenter-branch/Libis.jpg",
+        address: "Blk 13 Lot 7, E. Rodriguez Jr. Avenue, Bagumbayan Quezon City",
+        contact: "(02) 8546-1923 / 0949-889-2404",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Quezon City, Manila City Metro Manila NCR",
+      },
+      {
+        name: "FC Floor Center Caloocan",
+        location: [14.715493,121.0016895,21],
+        image: "/img/img-floorcenter-branch/Bagbaguin-Caloocan.jpg",
+        address: "1 ITC Compound Cor. General Luis St. Bagbaguin Caloocan City, Brgy. 165 District 1",
+        contact: "0919-069-3408",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Caloocan City, Manila City Metro Manila NCR",
+      },
+      {
+        name: "FC Floor Center Malabon",
+        location: [14.6651959,120.9841072,21],
+        image: "/img/img-floorcenter-branch/Malabon.jpg",
+        address: "92 Mc Arthur highway Potrero Malabon City",
+        contact: "(02) 8561-4775 / 0908-811-5797",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Malabon City, Metro Manila NCR",
+      },
+      {
+        name: "FC Floor Center BGC",
+        location: [14.5543849,121.0504221,21],
+        image: "/img/img-floorcenter-branch/BGC.jpg",
+        address: "32nd St. Cor. Fort Bonifacio Blvd. Global City, Taguig",
+        contact: "(02) 8682-0734 / 0908-811-5799",
+        schedule: "Monday-Saturday: 8:00am - 8:00pm  Sunday: 8:00am - 8:00pm",
+        city: "Taguig City, Manila City, Metro Manila NCR",
+      },
+      {
+        name: "FC Floor Center Taytay",
+        location: [14.5755208,121.1432061,21],
+        image: "/img/img-floorcenter-branch/Taytay.jpg",
+        address: "L15 Chi Manila East RD. Brgy. Dolores, Taytay Rizal",
+        contact: "0908-814-8093",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Taytay City Rizal City",
+      },
+      {
+        name: "<div class='laptop:tw-text-base tablet:tw-text-[15px] small_mobile:tw-text-[13px] tw-font-normal tw-leading-normal tw-text-center tw-text-gray-600 tw-font-outfit'>FC Floor Center MC Home Depot Ortigas</div>",
+        location: [14.5883173,121.0647515,21],
+        image: "/img/img-floorcenter-branch/Ortigas.jpg",
+        address: "Ortigas Center, Ortigas Ave. cor. Meralco Ave., Pasig",
+        contact: "0928-519-8354",
+        schedule: "Monday-Saturday: 8:00am - 8:00pm  Sunday: 8:00am - 8:00pm",
+        city: "Pasig City, Manila City, Metro Manila NCR",
+      },
+      {
+        name: "FC Floor Center Kawit 1",
+        location: [14.439759,120.9102618,21],
+        image: "",
+        address: "Blk. 2 Lot 18 Cavite Viejo Subd. Gahak, Kawit Cavite",
+        contact: "(046) 489-9882 / 0949-889-2476",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Kawit City Cavite City",
+      },
+      {
+        name: "FC Floor Center Bacoor",
+        location: [14.4486624,120.9542502,21],
+        image: "",
+        address: "Unit 8B & 8C Barangay Panapaan IV Aguinaldo Hi-way Bacoor, Cavite",
+        contact: "(046) 886-6533 / 0917-4991-636 / 0928-5172-925",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Bacoor City Cavite City",
+      },
+      {
+        name: "FC Floor Center Alaminos",
+        location: [16.1468002,119.9759951,21],
+        image: "",
+        address: "Alex Ang Bldg., Marcos Ave., Palamis, Alaminos City, Pangasinan",
+        contact: "0918-964-9791",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Alaminos City Pangasinan City",
+      },
+      {
+        name: "FC Floor Center Balanga",
+        location: [14.6681312,120.5268091,21],
+        image: "",
+        address: "Roman Highway Cataning Balanga City, Bataan",
+        contact: "0917-150-0343",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Balanga City Bataan City",
+      },
+      {
+        name: "FC Floor Center Lingayen",
+        location: [16.0057333,120.2322477,21],
+        image: "",
+        address: "Avenida Rizal St., Brgy. Poblacion Lingayen Pangasinan",
+        contact: "0918-967-7657",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Lingayen City Pangasinan City",
+      },
+      {
+        name: "FC Floor Center Malolos",
+        location: [14.9080498,120.7668172,21],
+        image: "/img/img-floorcenter-branch/Malolos.jpg",
+        address: "Mc Arthur Highway, Longos, Malolos City, Bulacan",
+        contact: "(044) 903-5969 / 0947-999-3431",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Malolos City Bulacan City",
+      },
+      {
+        name: "FC Floor Center Olongapo",
+        location: [14.8283137,120.2722401,21],
+        image: "/img/img-floorcenter-branch/Olongapo.jpg",
+        address: "189 National Highway, Lower Kalaklan, Olongapo City, Zambales",
+        contact: "(047) 222-2014 / 0947-889-8289",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Baguio City Zambales City",
+      },
+      {
+        name: "FC Floor Center Baguio 1",
+        location: [16.3933337,120.5791004,21],
+        image: "",
+        address: "Km. 4 Bakakeng Central Baguio City",
+        contact: "(074) 619-2233 / 0998-849-9301",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Baguio City Benguet City",
+      },
+      {
+        name: "FC Floor Center Baguio 2",
+        location: [16.4023351,120.595818,21],
+        image: "",
+        address: "Ground Floor Km. 5 Marcos Hi-way Baguio City",
+        contact: "(074) 620-5510 /0998-849-9317",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Baguio City Benguet City",
+      },
+      {
+        name: "FC Floor Center Candon",
+        location: [17.1734439,120.4421472,21],
+        image: "",
+        address: "Brgy. Paras, Candon City, Ilocos Sur",
+        contact: "(077) 604-0913 / 0998-849-9315",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Candon City Ilocos Sur City",
+      },
+      {
+        name: "FC Floor Center Capas",
+        location: [14.7818333,120.9352434,21],
+        image: "",
+        address: "164 Mc Arthur Hi-way, Sto Domingo 2, Capas, Tarlac",
+        contact: "(045) 491-7227 / 0998-849-9302",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Capas City Tarlac City",
+      },
+      {
+        name: "FC Floor Center Cauayan",
+        location: [16.9286252,121.764116,21],
+        image: "",
+        address: "District 2, National Hi-way,Cauayan City,Isabela",
+        contact: "(078) 652-0368 / 0998-849-9303",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Cauayan City Isabela City",
+      },
+      {
+        name: "FC Floor Center Dagupan",
+        location: [16.0390864,120.3462601,21],
+        image: "",
+        address: "McArthur Hi-way, Caranglaan District Dagupan City",
+        contact: "(075) 522-0206 / 0998-849-9304",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Dagupan City Panggasinan City",
+      },
+      {
+        name: "FC Floor Center Guimba",
+        location: [15.655197,120.7734024,21],
+        image: "",
+        address: "Cabatbat Building, Saranay District, Guimba, Nueva Ecija",
+        contact: "(044) 951-2521 / 0998-849-9305",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Guimba City Nueva Ecija City",
+      },
+      {
+        name: "FC Floor Center Ilagan",
+        location: [17.1141688,121.8649654,21],
+        image: "",
+        address: "Brgy. Baligatan, Ilagan City, Isabela",
+        contact: "(078) 323-3546 / 0998-849-9318",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Ilagan City  Isabela City",
+      },
+      {
+        name: "FC Floor Center La Trinidad",
+        location: [16.4465768,120.5886935,21],
+        image: "",
+        address: "Antonio Sohu Bldg. KM 4 Pico, La Trinidad Benguet",
+        contact: "(074) 422-2488 / 0998-849-9306",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "La Trinidad City Benguet City",
+      },
+      {
+        name: "FC Floor Center La Union",
+        location: [16.5904979,120.3233544,21],
+        image: "",
+        address: "National Hi-way, Brgy. Sevilla San Fernando City, La Union",
+        contact: "(072) 888-1186 / 0998-849-9307",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "La Union City",
+      },
+      {
+        name: "FC Floor Center Laoag",
+        location: [18.147092,120.5853608,21],
+        image: "",
+        address: "Brgy. 22 San Nicolas Ilocos Norte",
+        contact: "(077) 670-7201 / 0998-849-9308",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Laoag City Ilocos Norte  City",
+      },
+      {
+        name: "FC Floor Center San Jose",
+        location: [15.8074126,121.000688,21],
+        image: "",
+        address: "Rufina Homes II Subd. Brgy. Malasin San Jose City Nueva Ecija",
+        contact: "(044) 8951-2358 / 0998-849-9317",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "San Jose City Nueva Ecija City",
+      },
+      {
+        name: "FC Floor Center Santiago",
+        location: [16.689456,121.5387986,21],
+        image: "",
+        address: "Dubinan West, Santiago City, Isabela",
+        contact: "(078) 682-0264 / 0998-849-9309",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Santiago City Isabela City",
+      },
+      {
+        name: "FC Floor Center Tarlac",
+        location: [15.4727492,120.5978918,21],
+        image: "",
+        address: "Jaral Bldg., McArthur Hi-way San Sebastian Village, Tarlac City",
+        contact: "(045) 982-3453 / 0998-849-9310",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Tarlac City",
+      },
+      {
+        name: "FC Floor Center Tuguegarao 1",
+        location: [17.6468567,121.7414189,21],
+        image: "",
+        address: "Matammu Bldg. Maharlika Hi-way, Leonarda Pengue, Tuguegaro City, Cagayan",
+        contact: "(078) 844-1731 / 0998-849-9311",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Tuguegarao City Cagayan City",
+      },
+      {
+        name: "FC Floor Center Tuguegarao 2",
+        location: [17.613262,121.7174322,21],
+        image: "",
+        address: "Luna St. Extension, Buntun Tuguegarao City, Cagayan",
+        contact: "(078) 844-0314 / 0998-849-9312",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Tuguegarao City Cagayan City",
+      },
+      {
+        name: "FC Floor Center Urdaneta",
+        location: [15.9625313,120.5730653,21],
+        image: "",
+        address: "Stall # 6,7,8, Junaco Bldg. Nancayasan Urdaneta, Pangasinan",
+        contact: "(075) 529-2972 / 0998-849-9313",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Urdaneta City Pangasinan City",
+      },
+      {
+        name: "FC Floor Center Vigan",
+        location: [17.5824084,120.3872764,21],
+        image: "",
+        address: "National Hi-way, Balaleng Bantay, Vigan Ilocos Sur",
+        contact: "(077) 674-0764 / 0998-849-9314",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Vigan City Ilocos Sur City",
+      },
+      {
+        name: "FC Floor Center Agoo",
+        location: [16.3196439,120.3673906,21],
+        image: "",
+        address: "#18 San Nicolas Sur Agoo La Union",
+        contact: "(072) 888-7760 / 0998-849-9319",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Agoo City La Union City",
+      },
+      {
+        name: "FC Floor Center Aparri",
+        location: [18.3530958,121.6416396,21],
+        image: "",
+        address: "113 National Rd. Zone 5, Macanaya Aparri, Cagayan",
+        contact: "(078) 377-1385 / 0998-849-9320",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Aparri City Cagayan City",
+      },
+      {
+        name: "FC Floor Center Solano",
+        location: [16.5145601,121.1785127,21],
+        image: "",
+        address: "Brgy. Quezon, Solano Nueva Vizcaya",
+        contact: "(078) 430-9123 / 0998-849-9321",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Solano City Nueva Vizcaya City",
+      },
+      {
+        name: "FC Floor Center Isabela",
+        location: [17.0995848,121.6160185,21],
+        image: "",
+        address: "Raferville Sudb. Brgy. Sn Antonio, Roxas Isabela",
+        contact: "0935-214-1540",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Isabela City",
+      },
+      {
+        name: "FC Floor Center North Fairview",
+        location: [14.7097385,121.0618242,21],
+        image: "",
+        address: "#20 Commonwealth Avenue, North Fairview, Quezon City",
+        contact: "(02) 7719-4391 / 0933-857-7762",
+        schedule: "Monday-Saturday: 8:00am - 6:30pm  Sunday: 8:00am - 5:30pm",
+        city: "Quezon City, Manila City NCR",
+      },
+      {
+        name: "FC Floor Center Aurora",
+        location: [14.6261749,121.0595329,21],
+        image: "",
+        address: "#925 Aurora Blvd. cor. La Salle St., across Toyota Cubao, Brgy. Silangan, Quezon City",
+        contact: "(02) 7717-7468 / 0933-857-7764",
+        schedule: "Monday-Saturday: 8:00am - 6:30pm  Sunday: 8:00am - 5:30pm",
+        city: "Quezon City, Manila City NCR",
+      },
+      {
+        name: "FC Floor Center Baliuag",
+        location: [14.963402,120.897248,21],
+        image: "",
+        address: "DRT Hi-way, Brgy. Tangos, Baliuag Bulacan (Besides Metro Bank)",
+        contact: "(044) 308-9035 / 0933-861-1177",
+        schedule: "Monday-Saturday: 8:00am - 5:30pm  Sunday: <span class='tw-text-red-700'>Temporary Closed</span>",
+        city: "Baliuag City Bulacan City",
+      },
+      {
+        name: "FC Floor Center Cabanatuan 1",
+        location: [15.5070243,120.9648499,21],
+        image: "",
+        address: "Pantoc II, Maharlika Hi-way, Daan Sarili Cabanatuan City",
+        contact: "(044) 329-6671 / 0933-864-1188",
+        schedule: "Monday-Saturday: 8:00am - 5:30pm  Sunday: 8:00am - 5:30pm",
+        city: "Cabanatuan City Nueva Ecija City",
+      },
+      {
+        name: "FC Floor Center Cabanatuan 2",
+        location: [15.4837843,120.9660694,21],
+        image: "",
+        address: "#377 Brgy Dimasalang Maharlika Highway Cabanatuan City",
+        contact: "(044) 329-9071 / 0933-861-1199",
+        schedule: "Monday-Saturday: 8:00am - 5:30pm  Sunday: 8:00am - 5:30pm",
+        city: "Cabanatuan City Nueva Ecija City",
+      },
+    //   {
+    //     name: "FC Floor Center Gapan",
+    //     location: [],
+    //     image: "",
+    //     address: "Lot 9A Brgy. San Vicente, National Rd. Maharlika Hi-Way infront of Caltex, Gapan, Nueva Ecija",
+    //     contact: "(044) 7329-7524 / 0933-857-7788",
+    //     schedule: "Monday-Saturday: 8:00am - 5:30pm  Sunday: 8:00am - 5:30pm",
+    //     city: "Gapan City",
+    //   },
+      {
+        name: "FC Floor Center Marcos Hi Way",
+        location: [14.6251896,121.1229644,21],
+        image: "",
+        address: "#39 Marcos Highway Brgy. Mayamot Antipolo City",
+        contact: "(02) 7751-5689 / 0933-857-7763",
+        schedule: "Monday-Saturday: 8:15am - 6:30pm  Sunday: 8:00am - 5:30pm",
+        city: "Antipolo City Rizal City",
+      },
+      {
+        name: "FC Floor Center Mindanao Ave.",
+        location: [14.6886576,121.0307047,21],
+        image: "",
+        address: "#537 Mindanao Ave., Brgy. Talipapa Novaliches, Quezon City",
+        contact: "(02) 8938-8420 / 0933-857-7760",
+        schedule: "Monday-Saturday: 8:00am - 6:30pm  Sunday: 8:00am - 5:30pm",
+        city: "Quezon City, Manila City NCR",
+      },
+      {
+        name: "FC Floor Center Zabarte",
+        location: [14.7333149,121.0482308,21],
+        image: "",
+        address: "#1169 Quirino Hi-way, Brgy. Kaligayahan Novaliches, Quezon City",
+        contact: "(02) 7756-0012 / 0933-857-7761",
+        schedule: "Monday-Saturday: 8:00am - 6:30pm  Sunday: 8:00am - 5:30pm",
+        city: "Quezon City, Manila City NCR",
+      },
+      {
+        name: "FC Tile Depot San Fernando 2",
+        location: [15.0414374,120.6843447,21],
+        image: "",
+        address: "Jose Abad Santos Ave., Dolores, City of San Fernando, Pampanga",
+        contact: "0949-889-2395",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "San Fernando City  Pampanga City",
+      },
+      {
+        name: "FC Tile Depot Visayas Ave.",
+        location: [14.6718004,121.0425961,19.82],
+        image: "/img/img-floorcenter-branch/Visayas-Ave.jpg",
+        address: "#24 Congressional Ave., Brgy. Bahay Toro Quezon City",
+        contact: "(02) 3454-0176  / 0949-889-2393",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Quezon City, Manila City NCR",
+      },
+      {
+        name: "FC Tile Depot Binondo",
+        location: [14.6031303,120.9811292,21],
+        image: "",
+        address: "Florentino Square Center No. 746 Florentino Torres St. Brgy., Sta Cruz, Manila",
+        contact: "(02) 8554-0316 / 5310-7188 / 0949-889-2448",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Binondo Manila Manila City Metro Manila NCR",
+      },
+      {
+        name: "FC Tile Depot Cainta",
+        location: [14.5852823,121.1192705,21],
+        image: "",
+        address: "Maharlika Building. km.18 Ortigas Ave. Extension Brgy.San Isidro Cainta Rizal",
+        contact: "0949-889-2479",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Cainta City Rizal City",
+      },
+      {
+        name: "FC Tile Depot Roxas Blvd.",
+        location: [14.5522976,120.9884612,21],
+        image: "",
+        address: "Buendia Road, Corner Roxas Blvd., Brgy. 6, Pasay City",
+        contact: "(02) 8551-7661 / 0949-889-2504",
+        schedule: "Monday-Saturday: 8:00am - 8:00pm  Sunday: 8:00am - 8:00pm",
+        city: "Pasay City, Manila City NCR",
+      },
+      {
+        name: "FC Tile Depot Balintawak 1125",
+        location: [14.6572241,121.0101955,21],
+        image: "/img/img-floorcenter-branch/1125.jpg",
+        address: "1125 Edsa Balintawak, Apolonio Samson Quezon City",
+        contact: "8663-7020 / 0923-514-9220 / 0908-811-5796 / 0965-652-5111",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Quezon City, Manila City NCR",
+      },
+      {
+        name: "FC Tile Depot Marikina",
+        location: [14.6210867,121.0049775,21],
+        image: "/img/img-floorcenter-branch/Quezon-Ave.jpg",
+        address: "89 A Bonifacio Ave., Brgy. Tañong, Marikina City",
+        contact: "(02) 8242-2286 / 0999-227-0085",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Marikina City, Manila City NCR",
+      },
+      {
+        name: "FC Tile Depot Quezon Ave",
+        location: [14.6356301,121.0888141,21],
+        image: "",
+        address: "Hizon Bldg. No. 29 Quezon Ave. Doña Josefa Quezon City",
+        contact: "(02) 7728-5153 / (02) 8330-9355 / 0919-0820-656 / 0949-889-2447",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Marikina City, Manila City NCR",
+      },
+      {
+        name: "FC Tile Depot Commonwealth 1",
+        location: [14.6815854,121.0841367,21],
+        image: "",
+        address: "Block 3 Lot 1 Don Enrique Heights Commonwealth Avenue Brgy. Holy Spirit Quezon City",
+        contact: "(02) 3931-0076 /0949-889-2399 / 0919-073-9002",
+        schedule: "Monday-Saturday: 8:00am - 8:00pm  Sunday: 8:00am - 8:00pm",
+        city: "Quezon City, Manila City NCR",
+      },
+      {
+        name: "FC Tile Depot Mindoro",
+        location: [13.3819871,121.1624063,21],
+        image: "/img/img-floorcenter-branch/Mindoro.jpg",
+        address: "Nautical Hwy Brgy Masipit Calapan City Oriental Mindoro",
+        contact: "(43) 7384-540 / 0947-992-4988",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Calapan City Oriental Mindoro City",
+      },
+      {
+        name: "FC Tile Depot Makati",
+        location: [14.5471794,121.0147427,21],
+        image: "/img/img-floorcenter-branch/Makati.jpg",
+        address: "2230 UPRC-1 Bldg. Don Chino Roces Ave. Brgy. Bangkal, Makati City",
+        contact: "(02) 8819-6072/ 0949-889-2445 / 0999-227-0089",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Makati City Metro Manila Manila City NCR",
+      },
+      {
+        name: "FC Tile Depot Imus",
+        location: [14.3738477,120.9386179,21],
+        image: "",
+        address: "Emilio Aguinaldo Hi-way, Anabu II-D, City of Imus, Cavite",
+        contact: "(046) 424-2683 / 0949-889-2477",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Imus City Cavite City",
+      },
+      {
+        name: "FC Tile Depot Molino 2",
+        location: [14.4074481,120.972464,21],
+        image: "",
+        address: "Unit 9 & 10 Paseo De Bacoor, Bacoor Boulevard Molino III Cavite",
+        contact: "(046) 894-9419 / 0919-081-5416 / 0919-081-5415",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Molino City Cavite City",
+      },
+      {
+        name: "FC Tile Depot Molino 1",
+        location: [14.3899366,120.9773663,21],
+        image: "/img/img-floorcenter-branch/Molino-1.jpg",
+        address: "Unit 6,7, 12 & 13 Kaunlaran II Molino III, Bacoor Cavite",
+        contact: "(046) 502-6132 / 0949-889-2474 / 0999-227-9806",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Molino City Bacoor City Cavite City ",
+      },
+      {
+        name: "FC Tile Depot Antipolo",
+        location: [14.6011317,121.1758071,21],
+        image: "",
+        address: "B1 L3 and 4 Greenland Sumulong Highway, Antipolo City",
+        contact: "0999-227-9801",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Antipolo City Rizal City",
+      },
+      {
+        name: "FC Tile Depot Diversion",
+        location: [13.7908034,121.0610401,21],
+        image: "",
+        address: "Diversion Road Banaba south, Batangas City",
+        contact: "(043) 702-1685 / 0949-8892505 / 0999-227-9802",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Batangas City",
+      },
+      {
+        name: "FC Tile Depot Lemery",
+        location: [13.8893894,120.9100686,21],
+        image: "/img/img-floorcenter-branch/Lemery.jpg",
+        address: "Brgy. Palanas Lemery Batangas City",
+        contact: "(043) 740-9847 / 0949-889-2450",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Batangas City",
+      },
+      {
+        name: "FC Tile Depot Lipa",
+        location: [13.955299,121.1652596,21],
+        image: "",
+        address: "J.P. Laurel Hi-way, Sitio Pilahan Sabang, Lipa City",
+        contact: "(043) 757-4513  / 0949-889-2503",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Lipa City Batangas City",
+      },
+      {
+        name: "FC Tile Depot Kawit 2",
+        location: [14.4245556,120.8893422,21],
+        image: "",
+        address: "Epza By-Pass Road (Beside of Ningnangan Restaurant) Magdalo Putol, Kawit Cavite",
+        contact: "0928-515-5042",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Kawit City Kawit Cavite City",
+      },
+      {
+        name: "FC Tile Depot Lucena",
+        location: [13.9553915,121.6081123,21],
+        image: "",
+        address: "Lot33-E Blk 11 Diversion Road Gulang Gulang Lucena City",
+        contact: "(042) 795-3694 / 0949-8895051 / 0949-8895046",
+        schedule: "Monday-Saturday: 8:00am - 5:00pm  Sunday: 8:00am - 5:00pm",
+        city: "Lucena City, Quezon",
+      },
+      {
+        name: "FC Tile Depot Legazpi",
+        location: [13.1585803,123.7508968,21],
+        image: "",
+        address: "MMB Bldg. Penaranda St. Bonot Ext, Legazpi City",
+        contact: "0949-889-5058 / (052) 742-5313 / 0949-889-5046",
+        schedule: "Monday-Saturday: 8:00am - 5:00pm  Sunday: 8:00am - 5:00pm",
+        city: "Legazpi City Albay City",
+      },
+      {
+        name: "FC Tile Depot Naga",
+        location: [13.6218057,123.2158521,21],
+        image: "",
+        address: "Door A7-A10 Manzihing Bldg. Concepcion Grande, Naga City",
+        contact: "(054) 881-1067 / 0949-889-5048 / 0949-8895046",
+        schedule: "Monday-Saturday: 8:00am - 5:00pm  Sunday: 8:00am - 5:00pm",
+        city: "Naga City Camarines Sur City",
+      },
+      {
+        name: "FC Tile Depot Calamba",
+        location: [14.1969729,121.1454824,21],
+        image: "",
+        address: "National Hi-way Brgy. Real Calamba, City of Laguna",
+        contact: "(049) 508-5493 / 0949-889-5047 / 0949-8895046",
+        schedule: "Monday-Saturday: 8:00am - 5:00pm  Sunday: 8:00am - 5:00pm",
+        city: "Laguna City",
+      },
+      {
+        name: "FC Tile Depot Daet",
+        location: [14.1146715,122.9559606,21],
+        image: "",
+        address: "Yao Bldg., Diversion Road, Camambugan Daet, Camarines Norte",
+        contact: "(054) 885-0904 / 0998-5895637 / 0949-8895046",
+        schedule: "Monday-Saturday: 8:00am - 5:00pm  Sunday: 8:00am - 5:00pm",
+        city: "Daet City Camarines Norte City",
+      },
+      {
+        name: "FC Tile Depot Pili",
+        location: [13.5849284,123.2670749,21],
+        image: "",
+        address: "Door 13-16 Bldg. No. 4 San Jose Pili, Camarines Sur",
+        contact: "(054) 811-3674 / 0949-889-5049 / 0949-889-5059 / 0949-889-5046",
+        schedule: "Monday-Saturday: 8:00am - 5:00pm  Sunday: 8:00am - 5:00pm",
+        city: "Pili City Camarines Sur City",
+      },
+    //   {
+    //     name: "FC Tile Depot Pagbilao",
+    //     location: [],
+    //     image: "",
+    //     address: "437 Maharlika Highway, Brgy Alupaye, Pagbilao, Quezon",
+    //     contact: "(042) 911-1718 / 0928-504-0390 / 0928-504-0391 / 0949-889-5046",
+    //     schedule: "Monday-Saturday: 8:00am - 5:00pm  Sunday: 8:00am - 5:00pm",
+    //     city: "Pagbilao City",
+    //   },
+      {
+        name: "FC Tile Depot Tayabas",
+        location: [13.9750979,121.5575646,21],
+        image: "",
+        address: "9052 Maharlika Highway, Calumpang, Tayabas 4327 Quezon",
+        contact: "(042) 717-3788 / 0949-889-5051 / 0928-504-0405 / 0949-889-5046",
+        schedule: "Monday-Saturday: 8:00am - 5:00pm  Sunday: 8:00am - 5:00pm",
+        city: "Tayabas City, Quezon",
+      },
+      {
+        name: "FC Tile Depot Sorsogon",
+        location: [12.9770929,124.0157347,21],
+        image: "",
+        address: "1, Sorsogon City, Sorsogon",
+        contact: "(056) 311-4149 / 0949-889-5057 / 0998-227-6587 / 0949-889-5046",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Sorsogon City",
+      },
+    ],
+    visayas: [
+      {
+        name: "FC Floor Center Iloilo",
+        location: [10.7317197,122.5413717,21],
+        image: "",
+        address: "Me Building Dungon-B, Jaro Iloilo City",
+        contact: "(033) 326-3033 / 0999-223-3699 / 0919-081-5417",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Iloilo City",
+      },
+      {
+        name: "FC Tile Depot Mandaue, Cebu",
+        location: [10.3334017,123.9373573,21],
+        image: "",
+        address: "A.M.C Briones St., Highway Brgy. Guizo Mandaue City Cebu",
+        contact: "(032) 505-7749/ 0949-889-2480 / 0919-084-7115",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Mandaue City Cebu City",
+      },
+      {
+        name: "FC Tile Depot Imus, Cebu",
+        location: [10.3026612,123.9026501,21],
+        image: "/img/img-floorcenter-branch/Imus.jpg",
+        address: "MLC Bldg. Imus Ave. Barangay Day-As, Cebu City",
+        contact: "0999-228-8936 / (032) 520-5864",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Imus City Cebu City",
+      },
+      {
+        name: "FC Tile Depot Palawan",
+        location: [9.7853099,118.7487014,21],
+        image: "/img/img-floorcenter-branch/",
+        address: "National Highway San Jose Puerto Princesa Palawan",
+        contact: "0919-073-9003",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Puerto Princesa City Palawan City",
+      },
+      {
+        name: "FC Tile Depot Buhangin 2",
+        location: [7.1213682,125.6293012,21],
+        image: "/img/img-floorcenter-branch/Buhangin-2.jpg",
+        address: "Fc Tile Depot-Km.8 Pareñas Compound San Jose Diversion Road Cabantian Buhangin Davao City",
+        contact: "(082) 238-5090 / 0998-861-4964",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Davao City",
+      },
+    ],
+    mindanao: [
+        {
+        name: "FC Floor Center Matina, Davao",
+        location: [7.0509127,125.5818603,21],
+        image: "",
+        address: "Neri Bldg. Quimpo Boulevard Matina, Davao City",
+        contact: "(082) 298-3413 / 0949-889-2459 / 0999-223-3701",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Davao City",
+      },
+      {
+        name: "FC Floor Center Gensan",
+        location: [6.1162378,125.1638143,21],
+        image: "/img/img-floorcenter-branch/Gensan.jpg",
+        address: "Floor Center Bldg. National H’way Brgy. Dadiangas North, General Santos City",
+        contact: "0949-889-2472",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "General Santos City South Cotabato",
+      },
+      {
+        name: "FC Floor Center Cotabato",
+        location: [7.2002474,124.2385296,21],
+        image: "",
+        address: "Sinusuat Avenue, RH 9 Malagapas Cotabato City",
+        contact: "(064) 552-0106 / 0949-889-2473",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Cotabato City",
+      },
+      {
+        name: "FC Floor Center Iligan",
+        location: [8.2455033,124.2564931,21],
+        image: "",
+        address: "Purok 6A Tambo, National Hi-Way, Brgy. Hinaplanon, Iligan City",
+        contact: "(063) 222-8984 / 0949-889-2457",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Iligan City Lanao del Norte City",
+      },
+      {
+        name: "FC Floor Center Bajada, Davao",
+        location: [7.0983767,125.6220446,21],
+        image: "/img/img-floorcenter-branch/Bajada.jpg",
+        address: "Yap Bldg. Km.5, JP Laurel Avenue Bajada, Davao City",
+        contact: "(082) 226-6360 / 0949-889-2463",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Davao City Davao del Sur",
+      },
+      {
+        name: "FC Floor Center Tagum",
+        location: [7.4358719,125.8010481,21],
+        image: "/img/img-floorcenter-branch/Tagum.jpg",
+        address: "Km-54 National Highway Park Aquarius Visayan Village Tagum City",
+        contact: "(084) 216-8510 / 0999-223-3703",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Tagum City Davao del Norte",
+      },
+      {
+        name: "FC Floor Center Pagadian 1",
+        location: [7.8402818,123.4600561,21],
+        image: "",
+        address: "Zone 3, Barangay Tiguma, Pagadian City",
+        contact: "0918-963-1879",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Pagadian City Zamboanga del Sur",
+      },
+      {
+        name: "FC Floor Center Marbel",
+        location: [6.4851791,124.8606126,21],
+        image: "",
+        address: "Floor Center Purok Masagana 2, Gensan Drive Brgy. Zone 3, Koronadal City",
+        contact: "(083) 823-7769 / 0949-889-2478",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Koronadal City South Cotabato City",
+      },
+      {
+        name: "FC Floor Center Veterans",
+        location: [6.9123496,122.0794372,21],
+        image: "",
+        address: "V.H.W Bldg. Veterans Ave., Zamboanga City",
+        contact: "0927-547-9188",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Zamboanga City",
+      },
+      {
+        name: "FC Tile Depot Lapasan, Cagayan",
+        location: [8.4818185,124.6671062,21],
+        image: "",
+        address: "FC Tile Depot Bldg. Lapasan H’way, Cagayan De Oro City",
+        contact: "(088) 890-6804 / 0949-889-2454 / 0949-889-2455",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Cagayan De Oro City Misamis Oriental",
+      },
+      {
+        name: "FC Tile Depot Ecoland, Davao",
+        location: [7.0566844,125.6005181,21],
+        image: "/img/img-floorcenter-branch/Ecoland.jpg",
+        address: "Quimpo Boulevard, Ecoland, Davao City",
+        contact: "(082) 285-3884 / 0949-889-2461",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Davao City Davao del Sur",
+      },
+      {
+        name: "FC Tile Depot Zamboanga Tetuan",
+        location: [6.9228214,122.0810048,21],
+        image: "",
+        address: "MCLL Highway Tetuan Zamboanga City",
+        contact: "(062) 955-1317 / 0949-889-2453",
+        schedule: "Monday-Saturday: 8:00am - 7:00pm  Sunday: 8:00am - 7:00pm",
+        city: "Zamboanga City",
+      },
+      {
+        name: "FC Tile Depot Cugman",
+        location: [8.4745732,124.6919488,21],
+        image: "",
+        address: "Zone 6, Cugman, Cagayan De Oro City",
+        contact: "0949-889-2456",
+        schedule: "Monday-Saturday: 8:00am - 5:00pm  Sunday: 8:00am - 5:00pm",
+        city: "Cagayan De Oro City Misamis Oriental",
+      },
+      {
+        name: "FC Tile Depot Pagdian 2",
+        location: [7.8255435,123.4220089,21],
+        image: "",
+        address: "Purok Bagong Buhay, Bargy. Balangasan, Pagadian City",
+        contact: "0999-223-3702",
+        schedule: "Monday-Saturday: 8:00am - 6:00pm  Sunday: 8:00am - 6:00pm",
+        city: "Pagadian City Zamboanga del Sur",
+      },
+    ],
+  };
+
+  const customIcon = L.icon({
+      iconUrl: '/img/fc_logo.svg',
+      iconSize: [30, 30],
+      iconAnchor: [15, 30],
+      popupAnchor: [0, -30]
+    });
+    const userIcon = L.icon({
+      iconUrl: '/img/user_location.svg',
+      iconSize: [30, 30],
+      iconAnchor: [15, 30],
+      popupAnchor: [0, -30]
+    });
+
+    // searchStore
+  function updateStoreListOnInput() {
+  const storeInput = document.getElementById('storeInput');
+  const filteredBranches = branches.luzon.concat(branches.visayas, branches.mindanao).filter(branch =>
+    branch.name.toLowerCase().includes(storeInput.value.toLowerCase()) ||
+    branch.address.toLowerCase().includes(storeInput.value.toLowerCase()) ||
+    (branch.city && branch.city.toLowerCase().includes(storeInput.value.toLowerCase())) ||
+    (branches.luzon.includes(branch) && 'Luzon Branches'.toLowerCase().includes(storeInput.value.toLowerCase())) ||
+    (branches.visayas.includes(branch) && 'Visayas Branches'.toLowerCase().includes(storeInput.value.toLowerCase())) ||
+    (branches.mindanao.includes(branch) && 'Mindanao Branches'.toLowerCase().includes(storeInput.value.toLowerCase()))
+
+  );
+
+  sidebar.innerHTML = '';
+  let prevRegion = '';
+  filteredBranches.forEach(branch => {
+    let regionName = '';
+    if (branches.luzon.includes(branch)) {
+      regionName = 'Luzon Branches';
+    } else if (branches.visayas.includes(branch)) {
+      regionName = 'Visayas Branches';
+    } else if (branches.mindanao.includes(branch)) {
+      regionName = 'Mindanao Branches';
+    }
+
+    if (regionName !== prevRegion) {
+      const regionHeader = document.createElement('div');
+      regionHeader.classList.add('tablet:tw-w-[339px]', 'tw-w-[280px]', 'big_mobile:tw-w-[320px]', 'tw-text-xl', 'tw-font-semibold', 'tw-leading-7', 'tw-text-start', 'tw-h-12', 'tw-px-4', 'tw-py-2', 'tw-bg-white', 'tw-border', 'tw-border-gray-300', 'tw-items-center', 'tw-text-gray-600', 'tw-font-outfit');
+      regionHeader.textContent = regionName;
+      sidebar.appendChild(regionHeader);
+      prevRegion = regionName;
+    }
+
+    const listItem = document.createElement('div');
+    listItem.classList.add('sidebar-item');
+
+    const button = document.createElement('button');
+    button.classList.add('tablet:tw-w-[339px]', 'tw-w-[280px]', 'big_mobile:tw-w-[320px]', 'tw-h-10', 'tw-px-4', 'tw-py-2', 'tw-bg-white', 'tw-border', 'tw-border-gray-300', 'tw-justify-start', 'tw-items-center', 'tw-gap-2.5', 'tw-inline-flex');
+    button.innerHTML = `
+      <h3 class="laptop:tw-text-xl tablet:tw-text-[16px] tw-font-normal tw-leading-normal tw-text-center tw-text-gray-600 tw-font-outfit">${branch.name}</h3>
+    `;
+    button.addEventListener('click', (event) => {
+      // Hide all dropdown contents except the current one
+      document.querySelectorAll('.dropdown-content').forEach((content) => {
+        if (content !== dropdownContent) {
+          content.classList.add('tw-hidden');
+        }
+      });
+
+      dropdownContent.classList.toggle('tw-hidden'); // Toggle the 'hidden' class
+      if (!dropdownContent.classList.contains('tw-hidden')) {
+        map.setView(branch.location, 20);
+        updateSidebar(branch, dropdownContent);
+        showSchedule(branch);
+      }
+    });
+
+    const dropdownContent = document.createElement('div');
+    dropdownContent.classList.add('dropdown-content', 'tw-hidden'); // Hide the dropdown content initially
+
+    listItem.appendChild(button);
+    listItem.appendChild(dropdownContent);
+    sidebar.appendChild(listItem);
+  });
+}
+    // Map Function
+    function initMap() {
+  // Default location (Manila, Philippines)
+  const defaultLatitude = 14.5995;
+  const defaultLongitude = 120.9842;
+
+  map = L.map('map').setView([defaultLatitude, defaultLongitude], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+
+  sidebar = document.getElementById('sidebar');
+
+  branches.luzon.concat(branches.visayas, branches.mindanao).forEach(branch => {
+    const marker = L.marker(branch.location, { icon: customIcon }).addTo(map)
+      .bindPopup(`
+      <div class="tw-inline-flex tw-flex-col tw-gap-2">
+        <h2 class="tw-text-base tw-font-normal tw-leading-normal tw-text-gray-600 tw-text-start tw-font-outfit">${branch.name}</h2>
+        <div class="tw-w-[250px]">
+          <img class="tw-w-[250px] tw-h-[150px]" src="${branch.image}">
+        </div>
+        <button onclick="getDirections(${branch.location[0]}, ${branch.location[1]})" class="tw-w-[103px] tw-h-[27px] tw-bg-red-700 tw-rounded-full tw-shadow tw-justify-center tw-items-center tw-gap-2.5 tw-inline-flex">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="tw-text-white"><path fill="currentColor" d="m2.295 12.707l8.978 9c.389.39 1.025.391 1.414.002l9.021-9a1 1 0 0 0 0-1.416l-9.021-9a.999.999 0 0 0-1.414.002l-8.978 9a.998.998 0 0 0 0 1.412m6.707-2.706h5v-2l3 3l-3 3v-2h-3v4h-2z"/></svg>
+          <div class="tw-text-xs tw-font-semibold tw-leading-none tw-text-white tw-font-outfit">Directions</div>
+        </button>
+      </div>
+      `);
+
+    marker.on('click', () => {
+      map.setView(branch.location, 20);
+      updateSidebar(branch);
+      showSchedule(branch);
+    });
+  });
+
+  updateStoreListOnInput(); // Call the function to update the store list
+}
+
+
+
+  // Branches List function
+  let prevRegion = '';
+
+function createBranchListItem(branch) {
+  const listItem = document.createElement('div');
+  listItem.classList.add('sidebar-item');
+
+  let regionName = '';
+  if (branches.luzon.includes(branch)) {
+    regionName = 'Luzon Branches';
+  } else if (branches.visayas.includes(branch)) {
+    regionName = 'Visayas Branches';
+  } else if (branches.mindanao.includes(branch)) {
+    regionName = 'Mindanao Branches';
+  }
+
+  if (regionName !== prevRegion) {
+    const regionHeader = document.createElement('div');
+    regionHeader.classList.add('tablet:tw-w-[339px]', 'tw-w-[280px]', 'big_mobile:tw-w-[320px]', 'tw-text-xl', 'tw-font-semibold', 'tw-leading-7', 'tw-text-start', 'tw-h-12', 'tw-px-4', 'tw-py-2', 'tw-bg-white', 'tw-border', 'tw-border-gray-300', 'tw-items-center', 'tw-text-gray-600', 'tw-font-outfit');
+    regionHeader.textContent = regionName;
+    listItem.appendChild(regionHeader);
+    prevRegion = regionName;
+  }
+
+  const button = document.createElement('button');
+  button.classList.add('tablet:tw-w-[339px]', 'tw-w-[280px]', 'big_mobile:tw-w-[320px]', 'tw-h-10', 'tw-px-4', 'tw-py-2', 'tw-bg-white', 'tw-border', 'tw-border-gray-300', 'tw-justify-start', 'tw-items-center', 'tw-gap-2.5', 'tw-inline-flex');
+  button.innerHTML = `
+    <h3 class="laptop:tw-text-xl tablet:tw-text-[16px] tw-font-normal tw-leading-normal tw-text-center tw-text-gray-600 tw-font-outfit">${branch.name}</h3>
+  `;
+  button.addEventListener('click', (event) => {
+    // Hide all dropdown contents except the current one
+    document.querySelectorAll('.dropdown-content').forEach((content) => {
+      if (content !== dropdownContent) {
+        content.classList.add('tw-hidden');
+      }
+    });
+
+    dropdownContent.classList.toggle('tw-hidden'); // Toggle the 'hidden' class
+    if (!dropdownContent.classList.contains('tw-hidden')) {
+      map.setView(branch.location, 20);
+      updateSidebar(branch, dropdownContent);
+      showSchedule(branch);
+    }
+  });
+
+  const dropdownContent = document.createElement('div');
+  dropdownContent.classList.add('dropdown-content', 'tw-hidden'); // Hide the dropdown content initially
+
+  listItem.appendChild(button);
+  listItem.appendChild(dropdownContent);
+  return listItem;
+}
+
+    //Content branch information
+  function updateSidebar(branch, container) {
+    container.innerHTML = `
+      <div class="tw-p-4">
+        <div class="tw-flex tw-justify-center">
+          <div class="tw-inline-flex tw-flex-col tw-justify-center tw-w-[300px] tw-h-full tw-gap-4 tw-px-4 tw-py-4 tw-bg-white tw-rounded-md sidebar-item">
+            <div class="tw-inline-flex tw-items-center tw-gap-3">
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="-5 -2 24 24" class="tw-text-gray-600"><path fill="currentColor" d="M12 7A5 5 0 1 0 2 7c0 1.726 1.66 5.031 5 9.653c3.34-4.622 5-7.927 5-9.653M7 20C2.333 13.91 0 9.577 0 7a7 7 0 1 1 14 0c0 2.577-2.333 6.91-7 13m0-9a4 4 0 1 1 0-8a4 4 0 0 1 0 8m0-2a2 2 0 1 0 0-4a2 2 0 0 0 0 4"/></svg>
+            </div>
+              <div class="tw-text-[13px] tw-font-medium tw-leading-none tw-text-gray-600 tw-text-start tw-font-outfit">${branch.address}</div>
+            </div>
+            <div class="tw-inline-flex tw-items-center tw-gap-3">
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="tw-text-gray-600"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.6 14.522c-2.395 2.52-8.504-3.534-6.1-6.064c1.468-1.545-.19-3.31-1.108-4.609c-1.723-2.435-5.504.927-5.39 3.066c.363 6.746 7.66 14.74 14.726 14.042c2.21-.218 4.75-4.21 2.214-5.669c-1.267-.73-3.008-2.17-4.342-.767"/></svg>
+            </div>
+              <a class="tw-text-[13px] tw-font-medium tw-leading-none tw-text-red-600 tw-text-start tw-font-outfit tw-cursor-pointer hover:tw-underline" href="tel:${branch.contact}">${branch.contact}</a>
+            </div>
+            <div class="tw-inline-flex tw-items-center tw-gap-3">
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="tw-text-gray-600"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M11 8v5h5"/></g></svg>
+            </div>
+              <div class="tw-text-[13px] tw-font-medium tw-leading-none tw-text-gray-600 tw-text-start tw-font-outfit">${branch.schedule}</div>
+            </div>
+            <button onclick="getDirections(${branch.location[0]}, ${branch.location[1]})" class="tw-w-[103px] tw-h-[27px] tw-bg-red-700 tw-rounded-full tw-shadow tw-justify-center tw-items-center tw-gap-2.5 tw-inline-flex">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="tw-text-white"><path fill="currentColor" d="m2.295 12.707l8.978 9c.389.39 1.025.391 1.414.002l9.021-9a1 1 0 0 0 0-1.416l-9.021-9a.999.999 0 0 0-1.414.002l-8.978 9a.998.998 0 0 0 0 1.412m6.707-2.706h5v-2l3 3l-3 3v-2h-3v4h-2z"/></svg>
+              <div class="tw-text-xs tw-font-semibold tw-leading-none tw-text-white tw-font-outfit">Directions</div>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  // Get Directions
+  function getDirections(latitude, longitude) {
+      // Get the current location
+      navigator.geolocation.getCurrentPosition(position => {
+        const currentLatitude = position.coords.latitude;
+        const currentLongitude = position.coords.longitude;
+
+        const currentLocation = map.getCenter();
+        const url = `https://www.google.com/maps/dir/${currentLatitude},${currentLongitude}/${latitude},${longitude}`;
+        window.open(url, '_blank');
+      }, error => {
+        // Handle geolocation error
+        alert('Unable to retrieve current location. Please make sure location services are enabled.');
+      });
+    }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initMap();
+    document.getElementById('storeInput').addEventListener('input', updateStoreListOnInput);
+  });
+</script>
+
+<script>
+    // My Location Button
+document.getElementById('nearby-btn').addEventListener('click', () => {
+  navigator.geolocation.getCurrentPosition(position => {
+    const currentLatitude = position.coords.latitude;
+    const currentLongitude = position.coords.longitude;
+
+    const nearestBranch = findNearestBranch(currentLatitude, currentLongitude);
+    if (nearestBranch) {
+      map.setView(nearestBranch.location, 13);
+      updateSidebar(nearestBranch);
+      showSchedule(nearestBranch);
+    }
+  }, error => {
+    // Handle geolocation error
+    alert('Unable to retrieve current location. Please make sure location services are enabled.');
+  });
+});
+
+function findNearestBranch(latitude, longitude) {
+  let nearestBranch;
+  let nearestDistance = Number.MAX_VALUE;
+
+  branches.luzon.concat(branches.visayas, branches.mindanao).forEach(branch => {
+    const distance = calculateDistance(latitude, longitude, branch.location[0], branch.location[1]);
+    if (distance < nearestDistance) {
+      nearestBranch = branch;
+      nearestDistance = distance;
+    }
+  });
+
+  return nearestBranch;
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = deg2rad(lat2 - lat1);  // deg2rad below
+  const dLon = deg2rad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const d = R * c; // Distance in km
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180);
+}
+
+</script>
+
+<script>
+  document.getElementById('my-location-btn').addEventListener('click', () => {
+  navigator.geolocation.getCurrentPosition(position => {
+    const currentLatitude = position.coords.latitude;
+    const currentLongitude = position.coords.longitude;
+
+    // Add a circle to represent the radius
+    const radius = 4000; // 4km radius
+    L.circle([currentLatitude, currentLongitude], {
+      color: 'gray',
+      fillColor: 'gray',
+      fillOpacity: 0.2,
+      radius: radius
+    }).addTo(map);
+
+    // User Location
+    L.marker([currentLatitude, currentLongitude], { icon: userIcon })
+      .addTo(map)
+      .bindPopup(`<div class="tw-text-base tw-font-normal tw-leading-normal tw-text-gray-600 tw-text-start tw-font-outfit">Your Location</div>`);
+
+    map.setView([currentLatitude, currentLongitude], 15);
+  }, error => {
+    // Handle geolocation error
+    alert('Unable to retrieve current location. Please make sure location services are enabled.');
+  });
+});
+</script>
+
+<script>
+    // Function to show the loading spinner
+    function showLoadingSpinner() {
+        $("#loading-spinner").removeClass("tw-hidden").addClass("tw-flex");
+    }
+    // Function to hide the loading spinner
+    function hideLoadingSpinner() {
+        $("#loading-spinner").removeClass("tw-flex").addClass("tw-hidden");
+    }
+    $(document).ready(function() {
+        // Get the previously selected option value from localStorage, if available
+        let selectedOption = localStorage.getItem(
+            'selectedOption'); // If no option is selected or if the selected option is null, set it to "Luzon"
+        if (!selectedOption) {
+            selectedOption = "Luzon";
+            localStorage.setItem('selectedOption', selectedOption);
+        }
+
+        if (selectedOption) {
+            $('#selectedOption').val(selectedOption);
+        }
+
+        // Trigger change event to process initial value
+        $('#selectedOption').trigger('change');
+        $('#selectedOption').change(function() {
+            selectedOption = $(this).val();
+            showLoadingSpinner();
+            $.ajax({
+                route: '/getShopifyIndexProducts', // Verify that this URL is correct
+                method: 'GET',
+                data: {
+                    selectedOption: selectedOption,
+                },
+                success: function(response) {
+                    console.log(selectedOption);
+                    location.reload();
+                    hideLoadingSpinner();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error getting region value:', error);
+                }
+            });
+        });
+    });
+
+    // Save the selected option value to localStorage when the dropdown value changes
+    $('#selectedOption').change(function() {
+        let selectedOption = $(this).val();
+        localStorage.setItem('selectedOption', selectedOption);
+    });
+</script>
+
+</body>
+</html>
