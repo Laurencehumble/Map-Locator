@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   prefix: 'tw-',
-  content: ["./dist/*.{html,js}"],
+  content: ["./*.{html,js}"],
   theme: {
       extend: {
           screens: {
